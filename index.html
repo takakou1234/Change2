@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ツボマップ</title>
+  <meta name="description" content="症状選択で推奨ツボが表示。ツボ名クリックで対象ツボが点灯。3D立体操作。表示は『初心者（厳選3–6穴）／全穴』を切り替え可能です。" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+  <style>
+    .badge { border:1px solid rgb(226 232 240); border-radius:9999px; padding:.1rem .5rem; font-size:.75rem; }
+    .btn { border:1px solid rgb(226 232 240); border-radius:.75rem; padding:.5rem .75rem; font-size:.875rem }
+    .btn:hover{ background:#f8fafc }
+    .effects-row { display:flex; flex-wrap:wrap; gap:.35rem; margin-top:.25rem; }
+    .effect { border:1px solid rgb(226 232 240); border-radius:9999px; padding:.1rem .5rem; font-size:.75rem; background:#fff; display:inline-flex; align-items:center; gap:.25rem; }
+    .effect::before { content:'○'; font-weight:700; line-height:1; }
+    .three-canvas { display:block; width:100%; height:100%; }
+  </style>
+</head>
+<body class="min-h-screen bg-white text-slate-900">
+  <div class="mx-auto max-w-6xl p-4 md:p-8">
+    <header class="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-semibold">ツボマップ｜3Dで探す推奨ツボ</h1>
+        <p class="text-sm text-slate-600"><p>症状選択で推奨ツボが表示。ツボ名クリックで対象ツボが点灯強調。3D立体操作可。</p><p>表示は『初心者（厳選3–6穴）／全穴』を切り替え可能です。<span class="badge">初心者（厳選）</span>／<span class="badge">全穴</span> 切替可。</p></p>
+      </div>
+      <div class="flex items-center gap-2 text-sm">
+        <label class="flex items-center gap-2">
+          表示モード
+          <select id="mode" class="border rounded-lg px-2 py-1">
+            <option value="basic">初心者（厳選）</option>
+            <option value="all">全穴（収録のみ）</option>
+          </select>
+        </label>
+        <label class="flex items-center gap-2">
+          経脈
+          <select id="meridian" class="border rounded-lg px-2 py-1">
+            <option value="">すべて</option>
+          </select>
+        </label>
+      </div>
+    </header>
+
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="space-y-3">
+        <div>
+          <label class="text-sm text-slate-600">症状を選択</label>
+          <select id="symptom" class="w-full rounded-xl px-3 py-2 mt-1 text-sm bg-yellow-50 border border-yellow-300 text-yellow-800 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-yellow-300">
+          <select id="symptom" class="w-full border rounded-xl px-3 py-2 mt-1 text-sm"></select>
+        </div>
+        <div>
+          <label class="text-sm text-slate-600">検索（名称/英名/部位）</label>
+          <input id="search" type="text" class="w-full border rounded-xl px-3 py-2 mt-1 text-sm" placeholder="例：合谷 / Hegu / 手背" />
+        </div>
+        <div id="list" class="grid grid-cols-1 gap-3 max-h-[calc(100vh-220px)] overflow-y-auto pr-2"></div>
+      </div>
+
+      <div class="bg-slate-50 border rounded-2xl p-3">
+        <div class="flex items-end justify-between gap-3">
+          <div>
+            <div class="text-lg font-semibold">3Dモデル（three.js / glb）</div>
+<div class="text-xs text-slate-500 leading-relaxed">
+  マウス操作：左ドラッグ（押したまま動かす）＝回転／ホイール＝ズーム<br>
+  右ドラッグ＝平行移動
+</div>
+          </div>
+          <div id="threeStatus" class="text-xs text-slate-500"></div>
+        </div>
+        <div id="threeContainer" class="relative mt-2 w-full h-[560px] bg-white border rounded-xl overflow-hidden"></div>
+      </div>
+    </section>
+  </div>
+
+<template id="card">
+  <div class="border rounded-xl p-3 hover:bg-slate-50">
+    <div class="text-sm font-semibold flex items-center justify-between">
+      <span class="name"></span>
+      <span class="badge mer"></span>
+    </div>
+    <div class="text-xs text-slate-500 en"></div>
+    <div class="text-xs text-slate-500 region"></div>
+    <div class="text-sm loc mt-1"></div>
+    <div class="effects-row" data-role="effects"></div>
+
+    <!-- ▼ 取穴イラスト（あれば表示） -->
+    <div class="illus my-2"></div>
+
+    <div class="text-xs text-slate-500 depth mt-1"></div>
+    <div class="text-xs text-slate-400 src mt-1"></div>
+  </div>
+</template>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
